@@ -3,9 +3,8 @@ import argparse
 
 
 class Regression(object):
-    def __init__(self, p=2, b=0.0, alpha=0.01):
+    def __init__(self, p=2, b=0.0, alpha=0.1):
         """
-        :param w: weight vector. Set this to None to initialize weights randomly
         :param p: the number of features
         :param b: the bias term
         :param alpha: learning rate
@@ -79,6 +78,7 @@ class Main(object):
 
         random.seed(args.seed)
 
+        # read file
         f = open(args.filename, 'r')
         lines = []
         for line in f:
@@ -88,6 +88,7 @@ class Main(object):
         xs = []
         ys = []
 
+        # parse lines
         for line in lines:
             exploded = line.split(',')
             x = map(float, exploded[:-1])
@@ -98,6 +99,7 @@ class Main(object):
         r = Regression(p=2, b=random.uniform(-0.5, 0.5), alpha=0.1)
         print 'initial parameters: w = {0}, b = {1}'.format(r.weights, r.bias)
 
+        # iteratively measure the error and tweak the parameters
         for i in range(100):
             print
             error = r.calculate_error(xs, ys)
