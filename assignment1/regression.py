@@ -20,7 +20,7 @@ class Regression(object):
 
     def calculate_output(self, x):
         output = 0
-        for i in xrange(len(x)):  # TODO: use self.p
+        for i in xrange(len(x)):
             output += self.weights[i] * x[i]
         output += self.bias
         return output
@@ -66,7 +66,18 @@ class Main(object):
                 required=False,
                 default="data-train.csv"
         )
+        arg_parser.add_argument(
+                '-s',
+                '--seed',
+                dest='seed',
+                type=int,
+                help='A seed for the pseudo-random number generator',
+                required=False,
+                default="1"
+        )
         args = arg_parser.parse_args()
+
+        random.seed(args.seed)
 
         f = open(args.filename, 'r')
         lines = []
@@ -84,13 +95,14 @@ class Main(object):
             xs.append(x)
             ys.append(y)
 
-        r = Regression(p=2, b=0.1, alpha=0.1)
+        r = Regression(p=2, b=random.uniform(-0.5, 0.5), alpha=0.1)
+        print 'initial parameters: w = {0}, b = {1}'.format(r.weights, r.bias)
 
-        for i in range(10):
+        for i in range(100):
             print
             error = r.calculate_error(xs, ys)
-            print 'iteration', i
-            print error
+            print 'iteration', i + 1
+            print 'error', error
             w_correction, b_correction = r.calculate_gradient_descent(xs, ys)
             r.update_parameters(w_correction, b_correction)
             print 'weights', r.weights
