@@ -21,10 +21,11 @@ class ExpectationMaximization(object):
 
     def run(self, num_iterations):
         for i in range(num_iterations):
+            print 'iteration', i, self.h
             self.do_one_iteration()
+        print 'finally', self.h
 
     def do_one_iteration(self):
-        print self.h
         self.expectation_step()
         self.maximization_step()
 
@@ -76,4 +77,4 @@ if __name__ == '__main__':
         sigma=1,
         x=data_manager.data
     )
-    em.run(num_iterations=10)
+    em.run(num_iterations=20)

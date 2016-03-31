@@ -4,16 +4,18 @@ import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 from em import DataManager
 
-mu, sigma = -0.5, 1
+mus = [-0.5766685631700593, 2.978370252317221]
+sigma = 1.0
 
 x = np.array(DataManager().data)
 
 # the histogram of the data
 n, bins, patches = plt.hist(x, 50, normed=1, facecolor='green', alpha=0.75)
 
-# add a 'best fit' line
-# y = mlab.normpdf(bins, mu, sigma)
-# l = plt.plot(bins, y, 'r--', linewidth=1)
+# overlay gaussian lines
+for mu in mus:
+    y = mlab.normpdf(bins, mu, sigma)
+    l = plt.plot(bins, y, 'r--', linewidth=1)
 
 plt.xlabel('Value')
 plt.ylabel('Probability')
