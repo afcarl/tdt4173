@@ -1,0 +1,3 @@
+classifiers/*.pickle
+classifiers/*.npy
+*.hdf5
