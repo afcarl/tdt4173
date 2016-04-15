@@ -4,12 +4,14 @@ from PIL import Image
 import os
 import h5py
 import numpy as np
+import random
 
 
 class Preprocessing(object):
     def __init__(self):
         self.x, self.y = self.get_vectors()
-        self.write_dataset()
+        self.shuffle_data_set()
+        self.write_data_set()
 
     @staticmethod
     def print_ascii(image):
@@ -46,13 +48,21 @@ class Preprocessing(object):
 
         return x, y
 
-    def write_dataset(self):
+    def shuffle_data_set(self):
+        # shuffle the data set to have all characters in both sets and to prevent positional bias
+        zipped_data_set = zip(self.x, self.y)
+        random.seed(42)
+        random.shuffle(zipped_data_set)
+        self.x = [x[0] for x in zipped_data_set]
+        self.y = [x[1] for x in zipped_data_set]
+
+    def write_data_set(self):
         file_name = 'data_set.hdf5'
         hdf_file_path = os.path.join('.', file_name)
         f = h5py.File(hdf_file_path, 'w')
 
         num_entries = len(self.x)
-        num_training_entries = int(num_entries * 0.8)
+        num_training_entries = int(num_entries * 0.5)
         num_validation_entries = num_entries - num_training_entries
         vector_size = len(self.x[0])
 

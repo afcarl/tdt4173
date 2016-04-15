@@ -10,7 +10,7 @@ with h5py.File('data_set.hdf5', 'r') as hf:
 
 USE_EXISTING_CLASSIFIER = False
 STORE_CLASSIFIER = True
-CLASSIFIER_TYPE = 'svc'  # used for training
+CLASSIFIER_TYPE = 'random_forest'  # used for training
 
 classifier_file_path = os.path.join('classifiers', CLASSIFIER_TYPE + '_classifier.pickle')
 
@@ -26,17 +26,14 @@ else:
     elif CLASSIFIER_TYPE == 'random_forest':
         from sklearn.ensemble import RandomForestClassifier
 
-        classifier = RandomForestClassifier(n_estimators=26)
+        classifier = RandomForestClassifier(n_estimators=90)
     elif CLASSIFIER_TYPE == 'nearest_neighbour':
         from sklearn import neighbors
 
         classifier = neighbors.KNeighborsClassifier(n_neighbors=5, weights='uniform')
-    elif CLASSIFIER_TYPE == 'ridge_regression':
-        from sklearn import linear_model
-
-        classifier = linear_model.Ridge(alpha=0.5)
     else:
         raise Exception('CLASSIFIER variable has an invalid value')
+
     classifier.fit(X_tr, Y_tr)
     if STORE_CLASSIFIER:
         joblib.dump(classifier, classifier_file_path)
