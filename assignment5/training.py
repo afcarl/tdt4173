@@ -21,14 +21,10 @@ if USE_EXISTING_CLASSIFIER and os.path.exists(classifier_file_path):
     classifier = joblib.load(classifier_file_path)
 else:
     print 'Training...'
-    if CLASSIFIER_TYPE == 'svc':
-        from sklearn.svm import SVC
-
-        classifier = SVC(kernel='linear', C=1.0)
-    elif CLASSIFIER_TYPE == 'random_forest':
+    if CLASSIFIER_TYPE == 'random_forest':
         from sklearn.ensemble import RandomForestClassifier
 
-        classifier = RandomForestClassifier(n_estimators=90)
+        classifier = RandomForestClassifier(n_estimators=150, n_jobs=2)
     elif CLASSIFIER_TYPE == 'nearest_neighbour':
         from sklearn import neighbors
 
