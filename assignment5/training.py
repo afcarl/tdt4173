@@ -10,7 +10,7 @@ with h5py.File('data_set.hdf5', 'r') as hf:
 
 USE_EXISTING_CLASSIFIER = False
 STORE_CLASSIFIER = True
-CLASSIFIER_TYPE = 'random_forest'  # used for training
+CLASSIFIER_TYPE = 'nearest_neighbour'  # used for training
 
 classifier_file_path = os.path.join('classifiers', CLASSIFIER_TYPE + '_classifier.pickle')
 

@@ -62,7 +62,7 @@ class Preprocessing(object):
         f = h5py.File(hdf_file_path, 'w')
 
         num_entries = len(self.x)
-        num_training_entries = int(num_entries * 0.5)
+        num_training_entries = int(num_entries * 0.7)
         num_validation_entries = num_entries - num_training_entries
         vector_size = len(self.x[0])
 
