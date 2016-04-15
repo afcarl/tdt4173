@@ -73,25 +73,21 @@ class Preprocessing(object):
 
     @staticmethod
     def create_variations(image, character):
-        angles = {5, 10, -5, -10}
-
         variations = []
-        for angle in angles:
-            transformed_image = transform.rotate(
-                image,
-                angle,
-                resize=False,
-                mode='edge'
-            )
-            variations.append(transformed_image)
-
-        # horizontal flip
-        # horizontally_flipped_image = np.fliplr(image)
-        # variations.append(horizontally_flipped_image)
 
         # inverted variant
         inverted_image = 1 - image
         variations.append(inverted_image)
+
+        for angle in [5, 10, 15, -5]:
+            for image_to_transform in [image, inverted_image]:
+                transformed_image = transform.rotate(
+                    image_to_transform,
+                    angle,
+                    resize=False,
+                    mode='edge'
+                )
+                variations.append(transformed_image)
 
         return variations
 
