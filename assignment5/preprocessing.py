@@ -25,12 +25,12 @@ class Preprocessing(object):
     @staticmethod
     def print_ascii(image):
         chars = u' ░▒▓█'
-        width, height = image.size
-        pixel_values = list(image.getdata())
+        width, height = image.shape
+        image = img_as_float(image)
         for y in range(height):
             r = ''
             for x in range(width):
-                pixel_value = float(pixel_values[width * y + x]) / 255
+                pixel_value = image[y, x]
                 char_idx = int(round(pixel_value * (len(chars) - 1)))
                 r += chars[char_idx] + chars[char_idx]
             print r
@@ -72,7 +72,7 @@ class Preprocessing(object):
         self.validation_targets = self.y[self.num_training_entries:]
 
     @staticmethod
-    def create_variations(image, character):
+    def create_variations(image):
         variations = []
 
         # inverted variant
@@ -95,7 +95,7 @@ class Preprocessing(object):
         random.seed(seed)
         for i in range(len(self.training_inputs)):
             label = self.training_targets[i]
-            variations = self.create_variations(image=self.training_inputs[i], character=label)
+            variations = self.create_variations(image=self.training_inputs[i])
             self.training_inputs += variations
 
             for _ in variations:
@@ -157,7 +157,7 @@ class Preprocessing(object):
     def preprocess_image(image):
         # image = filters.sobel(image)  # sobel doesn't seem to improve predictive performance
         # image = denoise_bilateral(image, sigma_range=0.05, sigma_spatial=4, multichannel=False)  # computationally expensive
-        # image = feature.canny(image)  # outputs values between 0 and 1
+        # image = feature.canny(image)  # outputs binary values (0 and 1)
 
         image = img_as_float(image)
 

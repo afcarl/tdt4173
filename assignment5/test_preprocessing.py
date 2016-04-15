@@ -16,7 +16,7 @@ class TestPreprocessing(unittest.TestCase):
             processed_image = p.preprocess_image(image)
             io.imsave(os.path.join('tmp', 'image{}_after.png'.format(i)), processed_image)
 
-            variations = p.create_variations(processed_image, character='o')
+            variations = p.create_variations(processed_image)
             for j in range(len(variations)):
                 io.imsave(
                     os.path.join('tmp', 'image{0}_after_variation{1}.png'.format(i, j)),
