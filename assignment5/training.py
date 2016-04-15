@@ -1,7 +1,9 @@
 import os
 from sklearn.externals import joblib
 import h5py
+import time
 
+training_start_time = time.time()
 with h5py.File('data_set.hdf5', 'r') as hf:
     X_tr = hf.get('normalized').get('training').get('default')[:][0]
     Y_tr = hf.get('normalized').get('training').get('targets')[:][0]
@@ -30,7 +32,7 @@ else:
     elif CLASSIFIER_TYPE == 'nearest_neighbour':
         from sklearn import neighbors
 
-        classifier = neighbors.KNeighborsClassifier(n_neighbors=5, weights='uniform')
+        classifier = neighbors.KNeighborsClassifier(n_neighbors=5, weights='uniform', n_jobs=4)
     else:
         raise Exception('CLASSIFIER variable has an invalid value')
 
@@ -38,10 +40,12 @@ else:
     if STORE_CLASSIFIER:
         joblib.dump(classifier, classifier_file_path)
 
+print "Training time: %s seconds" % (time.time() - training_start_time)
 print 'Classifier:', classifier
 
 
 def test_performance(x, y):
+    testing_start_time = time.time()
     y_predicted = classifier.predict(x)
 
     num_predicted = len(y_predicted)
@@ -67,6 +71,7 @@ def test_performance(x, y):
             'Correct classifications (percentage)',
             100 * float(num_correct_classifications) / num_predicted
     )
+    print "Testing time: %s seconds" % (time.time() - testing_start_time)
 
 print 'Testing performance on validation set...'
 test_performance(X_va, Y_va)

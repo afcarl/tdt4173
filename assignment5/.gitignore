@@ -1,3 +1,4 @@
 classifiers/*.pickle
 classifiers/*.npy
 *.hdf5
+tmp/*

@@ -5,8 +5,9 @@ import os
 import h5py
 import numpy as np
 import random
-from skimage import io, filters, feature, transform, exposure
+from skimage import io, filters, feature, transform, exposure, img_as_float
 from skimage.restoration import denoise_bilateral
+import time
 
 
 class Preprocessing(object):
@@ -70,20 +71,38 @@ class Preprocessing(object):
         self.validation_inputs = self.x[self.num_training_entries:]
         self.validation_targets = self.y[self.num_training_entries:]
 
-    def augment_training_set(self):
-        angles = [5, 10, -5, -10]
+    @staticmethod
+    def create_variations(image, character):
+        angles = {5, 10, -5, -10}
 
+        variations = []
         for angle in angles:
-            for i in range(len(self.training_inputs)):
-                image = self.training_inputs[i]
-                label = self.training_targets[i]
-                transformed_image = transform.rotate(
-                    image,
-                    angle,
-                    resize=False,
-                    preserve_range=True
-                )
-                self.training_inputs.append(transformed_image)
+            transformed_image = transform.rotate(
+                image,
+                angle,
+                resize=False,
+                mode='edge'
+            )
+            variations.append(transformed_image)
+
+        # horizontal flip
+        # horizontally_flipped_image = np.fliplr(image)
+        # variations.append(horizontally_flipped_image)
+
+        # inverted variant
+        inverted_image = 1 - image
+        variations.append(inverted_image)
+
+        return variations
+
+    def augment_training_set(self, seed=92):
+        random.seed(seed)
+        for i in range(len(self.training_inputs)):
+            label = self.training_targets[i]
+            variations = self.create_variations(image=self.training_inputs[i], character=label)
+            self.training_inputs += variations
+
+            for _ in variations:
                 self.training_targets.append(label)
                 self.num_training_entries += 1
                 self.num_entries += 1
@@ -144,6 +163,8 @@ class Preprocessing(object):
         # image = denoise_bilateral(image, sigma_range=0.05, sigma_spatial=4, multichannel=False)  # computationally expensive
         # image = feature.canny(image)  # outputs values between 0 and 1
 
+        image = img_as_float(image)
+
         p2, p98 = np.percentile(image, (2, 98))
         image = exposure.rescale_intensity(image, in_range=(p2, p98))
 
@@ -151,9 +172,11 @@ class Preprocessing(object):
 
 
 if __name__ == '__main__':
+    preprocessing_start_time = time.time()
     p = Preprocessing()
     p.load_files()
     p.preprocess_images()
     p.divide_data_set()
     p.augment_training_set()
     p.write_data_set()
+    print "Preprocessing time: %s seconds" % (time.time() - preprocessing_start_time)
