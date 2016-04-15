@@ -71,5 +71,5 @@ def test_performance(x, y):
 print 'Testing performance on validation set...'
 test_performance(X_va, Y_va)
 print
-print 'Testing performance on training set...'
-test_performance(X_tr, Y_tr)
+# print 'Testing performance on training set...'
+# test_performance(X_tr, Y_tr)
