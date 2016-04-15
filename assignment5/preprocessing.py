@@ -5,7 +5,7 @@ import os
 import h5py
 import numpy as np
 import random
-from skimage import io, filters, feature, transform
+from skimage import io, filters, feature, transform, exposure
 from skimage.restoration import denoise_bilateral
 
 
@@ -77,7 +77,12 @@ class Preprocessing(object):
             for i in range(len(self.training_inputs)):
                 image = self.training_inputs[i]
                 label = self.training_targets[i]
-                transformed_image = transform.rotate(image, angle, resize=False, preserve_range=True)
+                transformed_image = transform.rotate(
+                    image,
+                    angle,
+                    resize=False,
+                    preserve_range=True
+                )
                 self.training_inputs.append(transformed_image)
                 self.training_targets.append(label)
                 self.num_training_entries += 1
@@ -138,6 +143,9 @@ class Preprocessing(object):
         # image = filters.sobel(image)  # sobel doesn't seem to improve predictive performance
         # image = denoise_bilateral(image, sigma_range=0.05, sigma_spatial=4, multichannel=False)  # computationally expensive
         # image = feature.canny(image)  # outputs values between 0 and 1
+
+        p2, p98 = np.percentile(image, (2, 98))
+        image = exposure.rescale_intensity(image, in_range=(p2, p98))
 
         return image
 
