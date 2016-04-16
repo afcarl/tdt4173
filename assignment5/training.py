@@ -2,6 +2,7 @@ import os
 from sklearn.externals import joblib
 import h5py
 import time
+import cPickle
 
 training_start_time = time.time()
 with h5py.File('data_set.hdf5', 'r') as hf:
@@ -12,7 +13,7 @@ with h5py.File('data_set.hdf5', 'r') as hf:
 
 USE_EXISTING_CLASSIFIER = False
 STORE_CLASSIFIER = True
-CLASSIFIER_TYPE = 'nearest_neighbour'  # used for training
+CLASSIFIER_TYPE = 'extra_trees'  # used for training
 
 classifier_file_path = os.path.join('classifiers', CLASSIFIER_TYPE + '_classifier.pickle')
 
@@ -25,6 +26,10 @@ else:
         from sklearn.ensemble import RandomForestClassifier
 
         classifier = RandomForestClassifier(n_estimators=150, n_jobs=2)
+    elif CLASSIFIER_TYPE == 'extra_trees':
+        from sklearn.ensemble import ExtraTreesClassifier
+
+        classifier = ExtraTreesClassifier(n_estimators=26, n_jobs=2)
     elif CLASSIFIER_TYPE == 'nearest_neighbour':
         from sklearn import neighbors
 
@@ -34,7 +39,10 @@ else:
 
     classifier.fit(X_tr, Y_tr)
     if STORE_CLASSIFIER:
-        joblib.dump(classifier, classifier_file_path)
+        with open(classifier_file_path, 'wb') as f:
+            cPickle.dump(classifier, f)
+
+        # joblib.dump(classifier, classifier_file_path)
 
 print "Training time: %s seconds" % (time.time() - training_start_time)
 print 'Classifier:', classifier

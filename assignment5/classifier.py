@@ -1,6 +1,7 @@
 import os
 from sklearn.externals import joblib
 from preprocessing import Preprocessing
+import cPickle
 
 
 class Classifier(object):
@@ -9,7 +10,10 @@ class Classifier(object):
             'classifiers',
             classifier_type + '_classifier.pickle'
         )
-        self.classifier = joblib.load(classifier_file_path)
+        with open(classifier_file_path, 'rb') as f:
+            self.classifier = cPickle.load(f)
+
+        # self.classifier = joblib.load(classifier_file_path)
 
     @staticmethod
     def get_category_by_index(idx):

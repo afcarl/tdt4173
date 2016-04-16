@@ -7,7 +7,7 @@ class TestClassifier(unittest.TestCase):
     def setUp(self):
         self.p = preprocessing.Preprocessing()
         self.p.load_files()
-        self.c = Classifier('nearest_neighbour')
+        self.c = Classifier('extra_trees')
 
     def test_classifier(self):
         alphabet = list('abcdefghijklmnopqrstuvwxyz')
