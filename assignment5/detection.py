@@ -23,8 +23,8 @@ class Detector(object):
 
         detected_characters = []
 
-        for y in range(0, height, self.stride[1]):
-            for x in range(0, width, self.stride[0]):
+        for y in range(0, height - self.stride[1] + 1, self.stride[1]):
+            for x in range(0, width - self.stride[0] + 1, self.stride[0]):
                 window = image[y:y + self.window_size[0], x:x + self.window_size[1]]
                 window = preprocessing.Preprocessing.preprocess_image(window)
 
@@ -45,9 +45,13 @@ class Detector(object):
         return detected_characters
 
     def visualize_detected_characters(self, image, detected_characters, save_to_filename=None):
-        pil_image = Image.fromarray(np.uint8(image))
-        pil_image.convert('RGB')
-        draw = ImageDraw.Draw(pil_image)
+        base_pil_image = Image.fromarray(np.uint8(image)).convert('RGBA')
+        new_pil_image = Image.new('RGBA', base_pil_image.size, (255, 255, 255, 0))
+        draw = ImageDraw.Draw(new_pil_image)
+
+        font = ImageFont.truetype('theboldfont.ttf', 22)
+        font_offset_x = 3
+        font_offset_y = 2
 
         for roi in detected_characters:
             draw.rectangle(
@@ -57,14 +61,25 @@ class Detector(object):
                     roi[0] + self.window_size[1],
                     roi[1] + self.window_size[0]
                 ],
-                outline='#ff0000'
+                fill=(190, 190, 190, 190),
+                outline=(220, 40, 40, 255)
             )
+
+            draw.text(
+                (roi[0] + font_offset_x, roi[1] + font_offset_y),
+                roi[2],
+                font=font,
+                fill=(255, 0, 0, 255)
+            )
+
         del draw
 
-        if save_to_filename is not None:
-            pil_image.save(save_to_filename)
+        result = Image.alpha_composite(base_pil_image, new_pil_image)
 
-        return pil_image
+        if save_to_filename is not None:
+            result.save(save_to_filename)
+
+        return result
 
 
 if __name__ == '__main__':

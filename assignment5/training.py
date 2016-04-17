@@ -39,10 +39,12 @@ else:
 
     classifier.fit(X_tr, Y_tr)
     if STORE_CLASSIFIER:
-        with open(classifier_file_path, 'wb') as f:
-            cPickle.dump(classifier, f)
+        if CLASSIFIER_TYPE in ['random_forest', 'extra_trees']:
+            with open(classifier_file_path, 'wb') as f:
+                cPickle.dump(classifier, f)
+        else:
+            joblib.dump(classifier, classifier_file_path)
 
-        # joblib.dump(classifier, classifier_file_path)
 
 print "Training time: %s seconds" % (time.time() - training_start_time)
 print 'Classifier:', classifier

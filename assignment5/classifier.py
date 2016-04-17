@@ -10,10 +10,12 @@ class Classifier(object):
             'classifiers',
             classifier_type + '_classifier.pickle'
         )
-        with open(classifier_file_path, 'rb') as f:
-            self.classifier = cPickle.load(f)
 
-        # self.classifier = joblib.load(classifier_file_path)
+        if classifier_type in ['random_forest', 'extra_trees']:
+            with open(classifier_file_path, 'rb') as f:
+                self.classifier = cPickle.load(f)
+        else:
+            self.classifier = joblib.load(classifier_file_path)
 
     @staticmethod
     def get_category_by_index(idx):
