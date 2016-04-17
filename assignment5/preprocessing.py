@@ -162,7 +162,8 @@ class Preprocessing(object):
         image = img_as_float(image)
 
         p2, p98 = np.percentile(image, (2, 98))
-        image = exposure.rescale_intensity(image, in_range=(p2, p98))
+        if p2 != p98:
+            image = exposure.rescale_intensity(image, in_range=(p2, p98))
 
         return image
 
