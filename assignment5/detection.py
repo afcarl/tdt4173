@@ -31,6 +31,8 @@ class Detector(object):
         for y in range(0, height - self.stride[1] + 1, self.stride[1]):
             for x in range(0, width - self.stride[0] + 1, self.stride[0]):
                 window = image[y:y + self.window_size[0], x:x + self.window_size[1]]
+                if window.shape != (20, 20):
+                    continue
                 window = preprocessing.Preprocessing.preprocess_image(window)
 
                 probabilities = self.classifier.get_probabilities(window)
