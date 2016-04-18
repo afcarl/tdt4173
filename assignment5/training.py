@@ -11,39 +11,35 @@ with h5py.File('data_set.hdf5', 'r') as hf:
     X_va = hf.get('normalized').get('validation').get('default')[:][0]
     Y_va = hf.get('normalized').get('validation').get('targets')[:][0]
 
-USE_EXISTING_CLASSIFIER = False
 STORE_CLASSIFIER = True
 CLASSIFIER_TYPE = 'extra_trees'  # used for training
 
 classifier_file_path = os.path.join('classifiers', CLASSIFIER_TYPE + '_classifier.pickle')
 
-if USE_EXISTING_CLASSIFIER and os.path.exists(classifier_file_path):
-    print 'Using existing classifier'
-    classifier = joblib.load(classifier_file_path)
+print 'Training...'
+if CLASSIFIER_TYPE == 'random_forest':
+    from sklearn.ensemble import RandomForestClassifier
+
+    classifier = RandomForestClassifier(n_estimators=30, n_jobs=2)
+elif CLASSIFIER_TYPE == 'extra_trees':
+    from sklearn.ensemble import ExtraTreesClassifier
+
+    classifier = ExtraTreesClassifier(n_estimators=30, n_jobs=2)
+    # classifier = ExtraTreesClassifier(n_estimators=150, n_jobs=2)
+elif CLASSIFIER_TYPE == 'nearest_neighbour':
+    from sklearn import neighbors
+
+    classifier = neighbors.KNeighborsClassifier(n_neighbors=10, weights='uniform', n_jobs=4)
 else:
-    print 'Training...'
-    if CLASSIFIER_TYPE == 'random_forest':
-        from sklearn.ensemble import RandomForestClassifier
+    raise Exception('CLASSIFIER variable has an invalid value')
 
-        classifier = RandomForestClassifier(n_estimators=150, n_jobs=2)
-    elif CLASSIFIER_TYPE == 'extra_trees':
-        from sklearn.ensemble import ExtraTreesClassifier
-
-        classifier = ExtraTreesClassifier(n_estimators=26, n_jobs=2)
-    elif CLASSIFIER_TYPE == 'nearest_neighbour':
-        from sklearn import neighbors
-
-        classifier = neighbors.KNeighborsClassifier(n_neighbors=5, weights='uniform', n_jobs=4)
+classifier.fit(X_tr, Y_tr)
+if STORE_CLASSIFIER:
+    if CLASSIFIER_TYPE in ['random_forest', 'extra_trees']:
+        with open(classifier_file_path, 'wb') as f:
+            cPickle.dump(classifier, f)
     else:
-        raise Exception('CLASSIFIER variable has an invalid value')
-
-    classifier.fit(X_tr, Y_tr)
-    if STORE_CLASSIFIER:
-        if CLASSIFIER_TYPE in ['random_forest', 'extra_trees']:
-            with open(classifier_file_path, 'wb') as f:
-                cPickle.dump(classifier, f)
-        else:
-            joblib.dump(classifier, classifier_file_path)
+        joblib.dump(classifier, classifier_file_path)
 
 
 print "Training time: %s seconds" % (time.time() - training_start_time)
