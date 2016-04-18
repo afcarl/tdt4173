@@ -155,15 +155,15 @@ class Preprocessing(object):
 
     @staticmethod
     def preprocess_image(image):
-        # image = filters.sobel(image)  # sobel doesn't seem to improve predictive performance
         # image = denoise_bilateral(image, sigma_range=0.05, sigma_spatial=4, multichannel=False)  # computationally expensive
+        # image = filters.sobel(image)  # sobel doesn't seem to improve predictive performance
         # image = feature.canny(image)  # outputs binary values (0 and 1)
 
         image = img_as_float(image)
 
-        p2, p98 = np.percentile(image, (2, 98))
-        if p2 != p98:
-            image = exposure.rescale_intensity(image, in_range=(p2, p98))
+        dark, bright = np.percentile(image, (15, 85))
+        if dark != bright:
+            image = exposure.rescale_intensity(image, in_range=(dark, bright))
 
         return image
 

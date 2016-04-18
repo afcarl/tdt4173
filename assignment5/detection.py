@@ -9,13 +9,18 @@ import numpy as np
 class Detector(object):
     CHARACTERS = list('abcdefghijklmnopqrstuvwxyz')
 
-    def __init__(self):
-        self.classifier = Classifier('extra_trees')
+    def __init__(self, classifier_type):
+        self.classifier = Classifier(classifier_type)
         self.stride = (20, 20)  # (y, x)
         self.window_size = (20, 20)  # (y, x)
         self.threshold = 0.5
 
     def detect_characters(self, image, verbose=False):
+        """
+        Apply the rolling window technique on the given image
+        Returns a list of tuples like (x, y, character)
+        """
+
         width = image.shape[1]
         height = image.shape[0]
         print 'width', width
@@ -45,6 +50,10 @@ class Detector(object):
         return detected_characters
 
     def visualize_detected_characters(self, image, detected_characters, save_to_filename=None):
+        """
+        Take an image and red draw rectangles and detected characters on the given positions
+        The image is stored if save_to_filename is specified
+        """
         base_pil_image = Image.fromarray(np.uint8(image)).convert('RGBA')
         new_pil_image = Image.new('RGBA', base_pil_image.size, (255, 255, 255, 0))
         draw = ImageDraw.Draw(new_pil_image)
@@ -83,7 +92,8 @@ class Detector(object):
 
 
 if __name__ == '__main__':
-    d = Detector()
+    # Run detection
+    d = Detector('extra_trees')
 
     path = 'detection-tests'
     for root, dirs, files in os.walk(path):

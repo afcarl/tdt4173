@@ -5,7 +5,7 @@ import cPickle
 
 
 class Classifier(object):
-    def __init__(self, classifier_type='random_forest'):
+    def __init__(self, classifier_type='extra_trees'):
         classifier_file_path = os.path.join(
             'classifiers',
             classifier_type + '_classifier.pickle'
