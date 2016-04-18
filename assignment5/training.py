@@ -25,7 +25,7 @@ elif CLASSIFIER_TYPE == 'extra_trees':
     from sklearn.ensemble import ExtraTreesClassifier
 
     classifier = ExtraTreesClassifier(n_estimators=30, n_jobs=2)
-    # classifier = ExtraTreesClassifier(n_estimators=150, n_jobs=2)
+    # classifier = ExtraTreesClassifier(n_estimators=150, n_jobs=2)  # This yields a large file
 elif CLASSIFIER_TYPE == 'nearest_neighbour':
     from sklearn import neighbors
 
